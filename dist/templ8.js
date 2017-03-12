@@ -2,7 +2,7 @@
 
 // How we tokenise the html
 
-const TAG_REGEX = /<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>/g;
+const TAG_REGEX = /<("[^"]*"['"]*|'[^']*'['"]*|[^'">])+>/g;
 
 /**
  * Parse a template string (interpolate it's values)

@@ -3,7 +3,7 @@
 "use strict"
 
 // How we tokenise the html
-const TAG_REGEX: RegExp = /<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>/g
+const TAG_REGEX: RegExp = /<("[^"]*"['"]*|'[^']*'['"]*|[^'">])+>/g
 
 /**
  * Parse a template string (interpolate it's values)
