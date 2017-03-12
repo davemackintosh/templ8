@@ -33,14 +33,21 @@ function templ8(template, ...values) {
   }
 
   matches.forEach((token, index) => {
+    // Get the parts.
+    const [tag, ...attrs] = token
+    // Strip off any GT/LT tokens.
+    .substring(1, token.length - (token.endsWith("/>") ? 2 : 1))
+
+    // Split up the attributes.
+    .split(/(\S+)=["']?((?:.(?!["']?\s+(?:\S+)=|[>"']))+.)["']?/g)
+
+    // Filter artifacts from the above RegExp.
+    .filter(item => item && item.trim().length > 0);
+
     // If it's starting tags, do stuff.
     if (!AST.tag && index % 2 === 0) {
-      // Get the parts.
-      const [tag, ...attrs] = token.substring(1, token.length - (token.endsWith("/>") ? 2 : 1)).split(/(\S+)=["']?((?:.(?!["']?\s+(?:\S+)=|[>"']))+.)["']?/g).filter(item => item && item.trim().length > 0);
-
+      // Set the tag name.
       AST.tag = tag.trim();
-
-      console.log("ATTRS", attrs);
 
       if (attrs.length > 0) {
         AST.attrs = Object.create(null);
@@ -50,6 +57,8 @@ function templ8(template, ...values) {
         });
       }
     }
+
+    console.log("TAG", tag, "ATTRS", attrs);
   });
 
   return templ8.transformer(AST);
