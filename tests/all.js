@@ -31,5 +31,5 @@ tape("Basic compilations", assert => {
 
   assert.deepEqual(tpl`<div class="whatever"></div>`, {tag: "div", attrs: {class: "whatever"}}, "Standard, empty element with static attribute")
   assert.deepEqual(tpl`<div class="${tag}"></div>`, {tag: "div", attrs: {class: tag}}, "Standard empty element with dynamic only attribute.")
-  assert.deepEqual(tpl`<div class="${tag}"></div>`, {tag: "div", attrs: {class: "whatever " + tag}}, "Standard, empty element with dynamic, concatenated attribute.")
+  assert.deepEqual(tpl`<div class="whatever ${tag}"></div>`, {tag: "div", attrs: {class: "whatever " + tag}}, "Standard, empty element with dynamic, concatenated attribute.")
 })
