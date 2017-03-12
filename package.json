@@ -1,0 +1,30 @@
+{
+  "name": "wcdom",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./dist/templ8.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "prepublish": "npm run build",
+    "postinstall": "npm run build",
+    "test": "tape tests/all.js | tap-spec",
+    "watch": "babel --watch=./index.js --out-file ./dist/templ8.js",
+    "build": "browserify --debug -s templ8 ./index.js -o ./dist/templ8.js -t [ babelify deamdify es6ify deglobalify ]"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "babel-cli": "^6.23.0",
+    "babel-plugin-transform-flow-strip-types": "^6.21.0",
+    "babelify": "^7.3.0",
+    "eslint": "^3.12.0",
+    "eslint-plugin-html": "^1.7.0",
+    "flow-bin": "^0.37.0",
+    "tap-spec": "^4.1.1",
+    "tape": "^4.6.3",
+    "watchify": "^3.8.0"
+  }
+}
