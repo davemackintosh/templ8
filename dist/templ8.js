@@ -4,6 +4,15 @@
 
 const TAG_REGEX = /<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>/g;
 
+/**
+ * Parse a template string (interpolate it's values)
+ * and generate an object representing that string
+ * for virtual dom,
+ *
+ * @param  {Array<string>} template parts.
+ * @param  {Array<*>} values to interpolate into the template parts.
+ * @return {Entity} valid virtual dom element.
+ */
 function templ8(template, ...values) {
   // The AST we're generating.
   const AST = {};
@@ -26,9 +35,8 @@ function templ8(template, ...values) {
   matches.forEach((token, index) => {
     // If it's starting tags, do stuff.
     if (!AST.tag && index % 2 === 0) {
-      console.log(token);
       // Get the parts.
-      const [tag, ...attrs] = token.substring(1, token.length - (token.endsWith("/>") ? 2 : 1)).split(/(\S+)=["']?((?:.(?!["']?\s+(?:\S+)=|[>"']))+.)["']?/g);
+      const [tag, ...attrs] = token.substring(1, token.length - (token.endsWith("/>") ? 2 : 1)).split(/(\S+)=["']?((?:.(?!["']?\s+(?:\S+)=|[>"']))+.)["']?/g).filter(item => item && item.trim().length > 0);
 
       AST.tag = tag.trim();
 
