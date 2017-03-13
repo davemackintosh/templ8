@@ -6,7 +6,7 @@ const tpl = require("../")
 const tag = "wcdom"
 
 tape("Basic compilations", assert => {
-  assert.plan(16)
+  assert.throws(() => tpl``, Error, "Throws error with empty template.")
 
   assert.deepEqual(tpl`<${tag}></${tag}>`, {tag}, "empty dynamic tag")
   assert.deepEqual(tpl`<${tag} class="whatever"></${tag}>`, {tag, attrs: {class: "whatever"}}, "empty dynamic tag with static class")
@@ -32,4 +32,6 @@ tape("Basic compilations", assert => {
   assert.deepEqual(tpl`<div class="whatever"></div>`, {tag: "div", attrs: {class: "whatever"}}, "Standard, empty element with static attribute")
   assert.deepEqual(tpl`<div class="${tag}"></div>`, {tag: "div", attrs: {class: tag}}, "Standard empty element with dynamic only attribute.")
   assert.deepEqual(tpl`<div class="whatever ${tag}"></div>`, {tag: "div", attrs: {class: "whatever " + tag}}, "Standard, empty element with dynamic, concatenated attribute.")
+
+  assert.end()
 })
