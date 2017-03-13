@@ -2,7 +2,7 @@
 
 // How we tokenise the html
 
-const TAG_REGEX = /<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>/g;
+const TAG_REGEX = /<([^ ]+[.*]|[^>])+>/g;
 
 /**
  * Get well formed object of attributes from
@@ -80,7 +80,7 @@ function templ8(template, ...values) {
   }, "");
 
   // Split the template into tags and closing tokens.
-  const matches = rendered_template.match(TAG_REGEX);
+  const matches = TAG_REGEX.exec(rendered_template);
 
   // Check we got any matches.
   if (!matches) throw new Error("You must supply one root element I.E <div>" + rendered_template.substr(0, 100) + "...</div>");

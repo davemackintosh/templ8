@@ -8,8 +8,9 @@ const tag = "wcdom"
 tape("Basic compilations", assert => {
   assert.throws(() => tpl``, Error, "Throws error with empty template.")
 
-  assert.deepEqual(tpl`<${tag}></${tag}>`, {tag}, "empty dynamic tag")
   assert.deepEqual(tpl`<${tag} class="whatever"></${tag}>`, {tag, attrs: {class: "whatever"}}, "empty dynamic tag with static class")
+  assert.deepEqual(tpl`<${tag}></${tag}>`, {tag}, "empty dynamic tag")
+
   assert.deepEqual(tpl`<${tag} class="whatever" id="test"></${tag}>`, {tag, attrs: {class: "whatever", id: "test"}}, "empty dynamic tag with multiple static attributes")
   assert.deepEqual(tpl`<${tag} class="whatever ${tag}"></${tag}>`, {tag, attrs: {class: "whatever " + tag}}, "empty dynamic tag with dynamic attribute")
   assert.deepEqual(tpl`<${tag}

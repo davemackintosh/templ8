@@ -3,7 +3,7 @@
 "use strict"
 
 // How we tokenise the html
-const TAG_REGEX: RegExp = /<(?:"[^"]*"['"]*|'[^']*'['"]*|[^'">])+>/g
+const TAG_REGEX: RegExp = /<([^ ]+[.*]|[^>])+>/g
 
 /**
  * Get well formed object of attributes from
@@ -86,7 +86,7 @@ function templ8(template: Array<string>, ...values: Array<*>): AST {
   }, "")
 
   // Split the template into tags and closing tokens.
-  const matches = rendered_template.match(TAG_REGEX)
+  const matches = TAG_REGEX.exec(rendered_template)
 
   // Check we got any matches.
   if (!matches)
