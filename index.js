@@ -69,13 +69,6 @@ function AST_from_token(token: string): AST {
  * @return {Entity} valid virtual dom element.
  */
 function templ8(template: Array<string>, ...values: Array<*>): AST {
-  // The AST we're generating.
-  let AST: AST = {}
-
-  // Target children is null so we can track for
-  // malformed templates later.
-  let target_children = null
-
   // Compile the template.
   const rendered_template = template.reduce((out, current, index) => {
     out += current
@@ -85,28 +78,39 @@ function templ8(template: Array<string>, ...values: Array<*>): AST {
     return out
   }, "")
 
+  // The AST we're generating.
+  let AST: AST = {}
+
+  // Target children is null so we can track for
+  // malformed templates later.
+  let target_children = null
+
+  // Used in the loop.
+  let index = 0
+  let token: string
+  let atIndex: number = 0
+  let match: mixed
+
   // Split the template into tags and closing tokens.
-  const matches = TAG_REGEX.exec(rendered_template)
+  while(match = TAG_REGEX.exec(rendered_template)) {
+    index = match.index
+    token = match[0]
+    console.log("Token=>", token, "atIndex=>", index)
 
-  // Check we got any matches.
-  if (!matches)
-    throw new Error("You must supply one root element I.E <div>"+rendered_template.substr(0, 100)+"...</div>")
+    // If it's a starting tag, create the initial tree.
+    if (index === 0) {
+      AST = AST_from_token(token)
+      target_children = AST.children
+    }
+    else if (!token.startsWith("</")) {
+      if (!target_children)
+        throw new Error("You must supply one root element I.E <div>"+rendered_template.substr(0, 100)+"...</div>")
+      else
+        target_children.push(AST_from_token(token))
+    }
 
-  matches
-    .forEach((token: string, index: number): void => {
-      console.log(token)
-      // If it's a starting tag, create the initial tree.
-      if (index === 0) {
-        AST = AST_from_token(token)
-        target_children = AST.children
-      }
-      else if (!token.startsWith("</")) {
-        if (!target_children)
-          throw new Error("You must supply one root element I.E <div>"+rendered_template.substr(0, 100)+"...</div>")
-        else
-          target_children.push(AST_from_token(token))
-      }
-    })
+    index++
+  }
 
   if (!AST.children || AST.children.length === 0)
     delete AST.children
