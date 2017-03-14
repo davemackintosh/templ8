@@ -81,22 +81,29 @@ function templ8(template, ...values) {
 
   // Used in the loop.
   let index = 0;
+  let open = false;
   let token;
-  let atIndex = 0;
+  let atIndex;
+  let prevAtIndex;
   let match;
 
   // Split the template into tags and closing tokens.
   while (match = TAG_REGEX.exec(rendered_template)) {
-    index = match.index;
+    prevAtIndex = atIndex;
+    atIndex = match.index;
     token = match[0];
-    console.log("Token=>", token, "atIndex=>", index);
+    console.log("Token=>", token, "atIndex=>", atIndex);
 
     // If it's a starting tag, create the initial tree.
     if (index === 0) {
+      // If it's not a self closing tag, it's an opening tag.
+      if (!token.endsWith("/>")) open = true;
       AST = AST_from_token(token);
       target_children = AST.children;
     } else if (!token.startsWith("</")) {
-      if (!target_children) throw new Error("You must supply one root element I.E <div>" + rendered_template.substr(0, 100) + "...</div>");else target_children.push(AST_from_token(token));
+      if (!target_children) throw new Error("You must supply one root element I.E <div>" + rendered_template.substr(0, 100) + "...</div>");else target_children.push(AST_from_token(token, atIndex, prevAtIndex));
+    } else {
+      open = false;
     }
 
     index++;
