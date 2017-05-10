@@ -78,6 +78,10 @@ function templ8(template: Array<string>, ...values: Array<*>): AST {
     return out
   }, "")
 
+  if (rendered_template === "") {
+    throw new Error("Cannot create a virtual DOM from an empty template/values pair. This is usually caused by having a template like ${myVar} where myVar is empty.")
+  }
+
   // The AST we're generating.
   let AST: AST = {}
 
@@ -86,12 +90,13 @@ function templ8(template: Array<string>, ...values: Array<*>): AST {
   let target_children = null
 
   // Used in the loop.
-  let index = 0
   let open = false
   let token: string
-  let atIndex: number
-  let prevAtIndex: number
   let match: mixed
+
+  let index = 0
+  let atIndex: number = 0
+  let prevAtIndex: number = 0
 
   // Split the template into tags and closing tokens.
   while(match = TAG_REGEX.exec(rendered_template)) {
