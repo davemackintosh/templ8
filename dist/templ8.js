@@ -14,7 +14,7 @@ const TAG_REGEX = /<([^ ]+[.*]|[^>])+>/g;
 function get_attrs_from_tokens(tokens) {
   const out = Object.create(null);
 
-  tokens.map(part => part.trim()).filter(part => part && part.trim().length > 0).forEach((attr, index) => {
+  tokens.map(part => part.trim()).filter(part => part && part.length > 0).forEach((attr, index) => {
     // Add the attributes.
     if (index % 2 === 0) out[attr] = tokens[index + 1];
   });
@@ -23,9 +23,9 @@ function get_attrs_from_tokens(tokens) {
 }
 
 /**
- * Generate an object from a tokenised HTML string.
+ * Generate an object from a tokenised piece of HTML.
  *
- * @param {[type]} token [description]
+ * @param {string} token to parse into the tree.
  */
 function AST_from_token(token) {
   const target = {
@@ -47,11 +47,63 @@ function AST_from_token(token) {
   target.tag = tag.trim();
 
   // Add any attributes.
-  if (attrs.length > 0) {
-    target.attrs = get_attrs_from_tokens(attrs);
-  }
+  if (attrs.length > 0) target.attrs = get_attrs_from_tokens(attrs);
 
   return target;
+}
+
+function parse_template(template) {
+  // The AST we're generating.
+  let AST = {};
+
+  // Target children is null so we can track for
+  // malformed templates later.
+  let target_children = null;
+  let previous_target_children = null;
+
+  // Used in the loop.
+  let open = false;
+  let token;
+  let match;
+
+  let index = 0;
+  let at_index = 0;
+  let prev_at_index = 0;
+
+  // Split the template into tags and closing tokens.
+  while (match = TAG_REGEX.exec(template)) {
+    prev_at_index = at_index;
+    at_index = match.index;
+    token = match[0];
+
+    // If it's a starting tag, create the initial tree.
+    if (index === 0) {
+      // If it's not a self closing tag, it's an opening tag.
+      if (!token.endsWith("/>")) open = true;
+
+      // Create the element.
+      AST = AST_from_token(token);
+
+      // Update the target children array.
+      previous_target_children = target_children;
+      target_children = AST.children;
+      console.log("PARENT", AST.tag, open);
+    } else if (!token.startsWith("</")) {
+      if (target_children) {
+        console.log(target_children, AST_from_token(token, at_index, prev_at_index));
+        target_children.push(AST_from_token(token));
+      }
+    } else {
+      open = false;
+      target_children = previous_target_children;
+    }
+
+    index++;
+  }
+
+  if (!AST.children || AST.children.length === 0) delete AST.children;
+
+  return AST;
 }
 
 /**
@@ -76,46 +128,10 @@ function templ8(template, ...values) {
     throw new Error("Cannot create a virtual DOM from an empty template/values pair. This is usually caused by having a template like ${myVar} where myVar is empty.");
   }
 
-  // The AST we're generating.
-  let AST = {};
+  // Create the VDom.
+  const AST = parse_template(rendered_template);
 
-  // Target children is null so we can track for
-  // malformed templates later.
-  let target_children = null;
-
-  // Used in the loop.
-  let open = false;
-  let token;
-  let match;
-
-  let index = 0;
-  let atIndex = 0;
-  let prevAtIndex = 0;
-
-  // Split the template into tags and closing tokens.
-  while (match = TAG_REGEX.exec(rendered_template)) {
-    prevAtIndex = atIndex;
-    atIndex = match.index;
-    token = match[0];
-    console.log("Token=>", token, "atIndex=>", atIndex);
-
-    // If it's a starting tag, create the initial tree.
-    if (index === 0) {
-      // If it's not a self closing tag, it's an opening tag.
-      if (!token.endsWith("/>")) open = true;
-      AST = AST_from_token(token);
-      target_children = AST.children;
-    } else if (!token.startsWith("</")) {
-      if (!target_children) throw new Error("You must supply one root element I.E <div>" + rendered_template.substr(0, 100) + "...</div>");else target_children.push(AST_from_token(token, atIndex, prevAtIndex));
-    } else {
-      open = false;
-    }
-
-    index++;
-  }
-
-  if (!AST.children || AST.children.length === 0) delete AST.children;
-
+  // Run it through the transformer.
   return templ8.transformer(AST);
 }
 

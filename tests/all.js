@@ -17,9 +17,27 @@ tape("Basic compilations", assert => {
     class="whatever"
   >
   </${tag}>`, {tag, attrs: {class: "whatever"}}, "Dynamic, empty tag with closing tag on new line.")
+
   assert.deepEqual(tpl`<${tag}>
   <h1>whatever</h1>
 </${tag}>`, {tag, children: [{tag: "h1", children: "whatever"}]}, "Dynamic tag with a child and usual tabbed spacing.")
+
+assert.deepEqual(tpl`<${tag}>
+<h1>whatever</h1>
+<div class="body">
+  <p>Some text with some <b>standard</b> <em>formatting</em> elements mixed in.</p>
+</div>
+</${tag}>`, {tag, children: [
+  {tag: "h1", children: "whatever"},
+  {tag: "div", attrs: {class:"body"}, children: [
+    {tag:"p", children: [
+      "Some text with some ",
+      {tag: "b", children: "standard"},
+      {tag: "em", children: "formatting"},
+      " elements mixed in"
+    ]}
+  ]}
+]}, "Common looking block, multiple children, usual tabbing.")
 
   assert.deepEqual(tpl`<${tag} />`, {tag}, "dynamic, self closing tag with space before self closing token")
   assert.deepEqual(tpl`<${tag}/>`, {tag}, "dynamic, self closing tag withOUT space before self closing token")
