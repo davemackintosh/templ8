@@ -3,7 +3,7 @@
 "use strict"
 
 // How we tokenise the html
-const TAG_REGEX: RegExp = /<([^ ]+[.*]|[^>])+>/g
+const TAG_REGEX: RegExp = /<([^ ]+[.*]|[^>])+>|([^<]+)/g
 
 /**
  * Get well formed object of attributes from
@@ -32,7 +32,7 @@ function get_attrs_from_tokens(tokens: Array<string>): Object {
  *
  * @param {string} token to parse into the tree.
  */
-function AST_from_token(token: string): AST {
+function AST_from_token(token: string): AST | boolean {
   const target: AST = {
     children: []
   }
@@ -48,12 +48,20 @@ function AST_from_token(token: string): AST {
     // Filter artifacts from the above RegExp.
     .filter(item => item && item.trim().length > 0)
 
+  if (!tag)
+    return false
+
   // Set the tag name.
   target.tag = tag.trim()
 
   // Add any attributes.
   if (attrs.length > 0)
     target.attrs = get_attrs_from_tokens(attrs)
+
+  console.log("AST_from_token(%s)", JSON.stringify(token))
+
+  if (!target.children || target.children.length === 0)
+    delete target.children
 
   return target
 }
@@ -93,12 +101,13 @@ function parse_template(template: string): AST {
       // Update the target children array.
       previous_target_children = target_children
       target_children = AST.children
-      console.log("PARENT", AST.tag, open)
     }
     else if (!token.startsWith("</")) {
       if (target_children) {
-        console.log(target_children, AST_from_token(token, at_index, prev_at_index))
-        target_children.push(AST_from_token(token))
+        const parsed = AST_from_token(token)
+
+        if (parsed)
+          target_children.push(parsed)
       }
     }
     else {
@@ -140,6 +149,8 @@ function templ8(template: Array<string>, ...values: Array<*>): AST {
 
   // Create the VDom.
   const AST: AST = parse_template(rendered_template)
+
+  console.log(JSON.stringify(AST, null, 2))
 
   // Run it through the transformer.
   return templ8.transformer(AST)
