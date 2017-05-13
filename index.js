@@ -32,7 +32,7 @@ function get_attrs_from_tokens(tokens: Array<string>): Object {
  *
  * @param {string} token to parse into the tree.
  */
-function AST_from_token(token: string): AST | boolean {
+function AST_from_token(token: string, current: AST): ?AST {
   const target: AST = {
     children: []
   }
@@ -49,7 +49,7 @@ function AST_from_token(token: string): AST | boolean {
     .filter(item => item && item.trim().length > 0)
 
   if (!tag)
-    return false
+    return
 
   // Set the tag name.
   target.tag = tag.trim()
@@ -58,17 +58,13 @@ function AST_from_token(token: string): AST | boolean {
   if (attrs.length > 0)
     target.attrs = get_attrs_from_tokens(attrs)
 
-  console.log("AST_from_token(%s)", JSON.stringify(token))
-
-  if (!target.children || target.children.length === 0)
-    delete target.children
-
   return target
 }
 
 function parse_template(template: string): AST {
   // The AST we're generating.
   let AST: AST = {}
+  let index = 0
 
   // Target children is null so we can track for
   // malformed templates later.
@@ -76,44 +72,27 @@ function parse_template(template: string): AST {
   let previous_target_children = null
 
   // Used in the loop.
-  let open = false
-  let token: string
-  let match: mixed
-
-  let index = 0
-  let at_index: number = 0
-  let prev_at_index: number = 0
+  let matches: Array<string>
 
   // Split the template into tags and closing tokens.
-  while(match = TAG_REGEX.exec(template)) {
-    prev_at_index = at_index
-    at_index = match.index
-    token = match[0]
+  while(matches = TAG_REGEX.exec(template)) {
+    const token = matches[0]
+    const new_AST = AST_from_token(token, AST)
 
-    // If it's a starting tag, create the initial tree.
+    // If there's no new AST, skip iteration.
+    if (!new_AST) continue
+
     if (index === 0) {
-      // If it's not a self closing tag, it's an opening tag.
-      if (!token.endsWith("/>")) open = true
+      AST = new_AST
 
-      // Create the element.
-      AST = AST_from_token(token)
+      if (AST.hasOwnProperty("children"))
+        target_children = AST.children
+    }
+    else if (!token.startsWith("</") && !token.endsWith("/>")) {
+      if (target_children)
+        target_children.push(new_AST)
+    }
 
-      // Update the target children array.
-      previous_target_children = target_children
-      target_children = AST.children
-    }
-    else if (!token.startsWith("</")) {
-      if (target_children) {
-        const parsed = AST_from_token(token)
-
-        if (parsed)
-          target_children.push(parsed)
-      }
-    }
-    else {
-      open = false
-      target_children = previous_target_children
-    }
 
     index++
   }
@@ -149,8 +128,6 @@ function templ8(template: Array<string>, ...values: Array<*>): AST {
 
   // Create the VDom.
   const AST: AST = parse_template(rendered_template)
-
-  console.log(JSON.stringify(AST, null, 2))
 
   // Run it through the transformer.
   return templ8.transformer(AST)
