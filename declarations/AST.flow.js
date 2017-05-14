@@ -1,7 +1,10 @@
 // @flow
 
 declare type AST = {
-  tag?: string,
+  type: string,
+  tagName?: string,
   attrs?: Object,
-  children?: Array<AST>
+  style?: Object,
+  children?: Array<AST>,
+  text?: string
 }

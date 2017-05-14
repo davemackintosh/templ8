@@ -32,9 +32,9 @@ function get_attrs_from_tokens(tokens: Array<string>): Object {
  *
  * @param {string} token to parse into the tree.
  */
-function AST_from_token(token: string, current: AST): ?AST {
+function AST_from_token(token: string, type: string = "VirtualText"): AST {
   const target: AST = {
-    children: []
+    type
   }
 
   // Get the parts.
@@ -49,10 +49,13 @@ function AST_from_token(token: string, current: AST): ?AST {
     .filter(item => item && item.trim().length > 0)
 
   if (!tag)
-    return
+    return target
 
   // Set the tag name.
-  target.tag = tag.trim()
+  if (type === "VirtualNode") {
+    target.tagName = tag.trim()
+    target.children = []
+  }
 
   // Add any attributes.
   if (attrs.length > 0)
@@ -77,22 +80,24 @@ function parse_template(template: string): AST {
   // Split the template into tags and closing tokens.
   while(matches = TAG_REGEX.exec(template)) {
     const token = matches[0]
-    const new_AST = AST_from_token(token, AST)
-
-    // If there's no new AST, skip iteration.
-    if (!new_AST) continue
 
     if (index === 0) {
-      AST = new_AST
+      AST = AST_from_token(token, "VirtualNode")
 
       if (AST.hasOwnProperty("children"))
         target_children = AST.children
     }
+    else if (!token.startsWith("<") && !token.endsWith(">")) {
+      if (target_children)
+        target_children.push({
+          type: "VirtualText",
+          text: token
+        })
+    }
     else if (!token.startsWith("</") && !token.endsWith("/>")) {
       if (target_children)
-        target_children.push(new_AST)
+        target_children.push(AST_from_token(token, "VirtualNode"))
     }
-
 
     index++
   }

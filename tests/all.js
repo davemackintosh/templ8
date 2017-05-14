@@ -8,49 +8,100 @@ const tag = "wcdom"
 tape("Basic compilations", assert => {
   assert.throws(() => tpl``, Error, "Throws error with empty template.")
 
-  assert.deepEqual(tpl`<${tag} class="whatever"></${tag}>`, {tag, attrs: {class: "whatever"}}, "empty dynamic tag with static class")
-  assert.deepEqual(tpl`<${tag}></${tag}>`, {tag}, "empty dynamic tag")
+  assert.deepEqual(tpl`<${tag} class="whatever"></${tag}>`, {
+    tagName: tag,
+    type: "VirtualNode",
+    attrs: {class: "whatever"}
+  }, "empty dynamic tag with static class")
+  assert.deepEqual(tpl`<${tag}></${tag}>`, {tagName: tag, type: "VirtualNode"}, "empty dynamic tag")
 
-  assert.deepEqual(tpl`<${tag} class="whatever" id="test"></${tag}>`, {tag, attrs: {class: "whatever", id: "test"}}, "empty dynamic tag with multiple static attributes")
-  assert.deepEqual(tpl`<${tag} class="whatever ${tag}"></${tag}>`, {tag, attrs: {class: "whatever " + tag}}, "empty dynamic tag with dynamic attribute")
+  assert.deepEqual(tpl`<${tag} class="whatever" id="test"></${tag}>`, {tagName: tag, type: "VirtualNode", attrs: {class: "whatever", id: "test"}}, "empty dynamic tag with multiple static attributes")
+  assert.deepEqual(tpl`<${tag} class="whatever ${tag}"></${tag}>`, {tagName: tag, type: "VirtualNode", attrs: {class: "whatever " + tag}}, "empty dynamic tag with dynamic attribute")
   assert.deepEqual(tpl`<${tag}
     class="whatever"
   >
-  </${tag}>`, {tag, attrs: {class: "whatever"}}, "Dynamic, empty tag with closing tag on new line.")
+  </${tag}>`, {tagName: tag, type: "VirtualNode", attrs: {class: "whatever"}}, "Dynamic, empty tag with closing tag on new line.")
 
   assert.deepEqual(tpl`<${tag}>
   <h1>whatever</h1>
-</${tag}>`, {tag, children: [{tag: "h1", children: "whatever"}]}, "Dynamic tag with a child and usual tabbed spacing.")
+</${tag}>`, {
+  tagName: tag,
+  type: "VirtualNode",
+  children: [
+    {
+      tagName: "h1",
+      type: "VirtualNode",
+      children: [
+        {
+          type: "VirtualText",
+          text: "whatever"
+        }
+      ]
+    }
+  ]
+}, "Dynamic tag with a child and usual tabbed spacing.")
 
 assert.deepEqual(tpl`<${tag}>
 <h1>whatever</h1>
 <div class="body">
   <p>Some text with some <b>standard</b> <em>formatting</em> elements mixed in.</p>
 </div>
-</${tag}>`, {tag, children: [
-  {tag: "h1", children: "whatever"},
-  {tag: "div", attrs: {class:"body"}, children: [
-    {tag:"p", children: [
-      "Some text with some ",
-      {tag: "b", children: "standard"},
-      {tag: "em", children: "formatting"},
-      " elements mixed in"
+</${tag}>`, {
+  tagName: tag,
+  type: "VirtualNode",
+  children: [
+  {
+    type: "VirtualNode",
+    tagName: "h1",
+    children: [
+      {
+        type: "VirtualText",
+        text: "whatever"
+      }
+    ]
+  },
+  {
+    tagName: "div",
+    type: "VirtualNode",
+    attrs: {class:"body"},
+    children: [
+    {
+      tagName:"p",
+      children: [
+      {
+        type: "VirtualText",
+        text: "Some text with some "
+      },
+      {
+        tagName: "b",
+        type: "VirtualNode",
+        children: "standard"
+      },
+      {
+        tagName: "em",
+        type: "VirtualNode",
+        children: "formatting"
+      },
+      {
+        type: "VirtualText",
+        text: " elements mixed in"
+      }
     ]}
   ]}
 ]}, "Common looking block, multiple children, usual tabbing.")
 
-  assert.deepEqual(tpl`<${tag} />`, {tag}, "dynamic, self closing tag with space before self closing token")
-  assert.deepEqual(tpl`<${tag}/>`, {tag}, "dynamic, self closing tag withOUT space before self closing token")
-  assert.deepEqual(tpl`<${tag} class="whatever" />`, {tag, attrs: {class: "whatever"}}, "dynamic, self closing tag with space before self closing token with static attribute")
-  assert.deepEqual(tpl`<${tag} class="whatever ${tag}" />`, {tag, attrs: {class: "whatever " + tag}}, "dynamic, self closing tag with space before self closing token with dynamic token")
-  assert.deepEqual(tpl`<${tag} class="whatever"/>`, {tag, attrs: {class: "whatever"}}, "dynamic, self closing tag withOUT space before self closing token with static attribute")
-  assert.deepEqual(tpl`<${tag} class="whatever ${tag}"/>`, {tag, attrs: {class: "whatever " + tag}}, "dynamic, self closing tag withOUT space before self closing token with dynamic token")
+  assert.deepEqual(tpl`<${tag} />`, {tagName: tag, type: "VirtualNode"}, "dynamic, self closing tag with space before self closing token")
+  assert.deepEqual(tpl`<${tag}/>`, {tagName: tag, type: "VirtualNode"}, "dynamic, self closing tag withOUT space before self closing token")
+  assert.deepEqual(tpl`<${tag} class="whatever" />`, {tagName: tag, type: "VirtualNode", attrs: {class: "whatever"}}, "dynamic, self closing tag with space before self closing token with static attribute")
+  assert.deepEqual(tpl`<${tag} class="whatever ${tag}" />`, {tagName: tag, type: "VirtualNode", attrs: {class: "whatever " + tag}}, "dynamic, self closing tag with space before self closing token with dynamic token")
+  assert.deepEqual(tpl`<${tag} class="whatever"/>`, {tagName: tag, type: "VirtualNode", attrs: {class: "whatever"}}, "dynamic, self closing tag withOUT space before self closing token with static attribute")
+  assert.deepEqual(tpl`<${tag} class="whatever ${tag}"/>`, {tagName: tag, type: "VirtualNode", attrs: {class: "whatever " + tag}}, "dynamic, self closing tag withOUT space before self closing token with dynamic token")
   assert.deepEqual(tpl`<${tag}
-  />`, {tag}, "Dynamic, self closing tag with no attributes and closing token on new line.")
+  />`, {tagName: tag, type: "VirtualNode"}, "Dynamic, self closing tag with no attributes and closing token on new line.")
 
-  assert.deepEqual(tpl`<div class="whatever"></div>`, {tag: "div", attrs: {class: "whatever"}}, "Standard, empty element with static attribute")
-  assert.deepEqual(tpl`<div class="${tag}"></div>`, {tag: "div", attrs: {class: tag}}, "Standard empty element with dynamic only attribute.")
-  assert.deepEqual(tpl`<div class="whatever ${tag}"></div>`, {tag: "div", attrs: {class: "whatever " + tag}}, "Standard, empty element with dynamic, concatenated attribute.")
+  assert.deepEqual(tpl`<div class="whatever"></div>`, {tagName: "div", type: "VirtualNode", attrs: {class: "whatever"}}, "Standard, empty element with static attribute")
+  assert.deepEqual(tpl`<div class="${tag}"></div>`, {tagName: "div", type: "VirtualNode", attrs: {class: tag}}, "Standard empty element with dynamic only attribute.")
+  assert.deepEqual(tpl`<div class="whatever ${tag}"></div>`, {tagName: "div", type: "VirtualNode", attrs: {class: "whatever " + tag}}, "Standard, empty element with dynamic, concatenated attribute.")
 
   assert.end()
 })
