@@ -69,34 +69,37 @@ function parse_template(template: string): AST {
   let AST: AST = {}
   let index = 0
 
-  // Target children is null so we can track for
-  // malformed templates later.
-  let target_children = null
-  let previous_target_children = null
-
   // Used in the loop.
   let matches: Array<string>
+
+  // We'll use this array to track parents.
+  const ASTs = []
 
   // Split the template into tags and closing tokens.
   while(matches = TAG_REGEX.exec(template)) {
     const token = matches[0]
+    const target_children = ASTs.length > 0 ? ASTs[ASTs.length - 1].children : null
 
     if (index === 0) {
       AST = AST_from_token(token, "VirtualNode")
-
-      if (AST.hasOwnProperty("children"))
-        target_children = AST.children
+      ASTs.push(AST)
     }
     else if (!token.startsWith("<") && !token.endsWith(">")) {
-      if (target_children)
+      if (target_children && token.replace(/\s+/g, "") !== "")
         target_children.push({
           type: "VirtualText",
           text: token
         })
     }
     else if (!token.startsWith("</") && !token.endsWith("/>")) {
+      const new_AST = AST_from_token(token, "VirtualNode")
       if (target_children)
-        target_children.push(AST_from_token(token, "VirtualNode"))
+        target_children.push(new_AST)
+
+      ASTs.push(new_AST)
+    }
+    else {
+      ASTs.pop()
     }
 
     index++
