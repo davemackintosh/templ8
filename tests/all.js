@@ -41,13 +41,6 @@ tape("Basic compilations", assert => {
   ]
 }, "Dynamic tag with a child and usual tabbed spacing.")
 
-console.log(JSON.stringify(tpl`<${tag}>
-<h1>whatever</h1>
-<div class="body">
-  <p>Some text with some <b>standard</b> <em>formatting</em> elements mixed in.</p>
-</div>
-</${tag}>`, null, 2))
-
 assert.deepEqual(tpl`<${tag}>
 <h1>whatever</h1>
 <div class="body">
@@ -74,6 +67,7 @@ assert.deepEqual(tpl`<${tag}>
     children: [
     {
       tagName:"p",
+      type: "VirtualNode",
       children: [
       {
         type: "VirtualText",
@@ -81,6 +75,7 @@ assert.deepEqual(tpl`<${tag}>
       },
       {
         tagName: "b",
+        type: "VirtualNode",
         children: [
           {
             type: "VirtualText",
@@ -90,6 +85,7 @@ assert.deepEqual(tpl`<${tag}>
       },
       {
         tagName: "em",
+        type: "VirtualNode",
         children: [
           {
             type: "VirtualText",
@@ -99,11 +95,78 @@ assert.deepEqual(tpl`<${tag}>
       },
       {
         type: "VirtualText",
-        text: "elements mixed in"
+        text: " elements mixed in."
       }
     ]}
   ]}
 ]}, "Common looking block, multiple children, usual tabbing.")
+
+  const expected = {
+  tagName: "div",
+  type: "VirtualNode",
+  children: [
+    {
+      type: "VirtualNode",
+      tagName: "p",
+      children: [
+        {
+          type: "VirtualText",
+          text: "m8s, use:"
+        }
+      ]
+    },
+    {
+      type: "VirtualNode",
+      tagName: "ul",
+      children: [
+        {
+          type: "VirtualNode",
+          tagName: "li",
+          children: [
+            {
+              type: "VirtualText",
+              text: "love"
+            }
+          ]
+        },
+        {
+          type: "VirtualNode",
+          tagName: "li",
+          children: [
+            {
+              type: "VirtualText",
+              text: "understanding"
+            }
+          ]
+        },
+        {
+          type: "VirtualNode",
+          tagName: "li",
+          children: [
+            {
+              type: "VirtualText",
+              text: "empathy"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
+
+const humanity = ["love", "understanding", "empathy"]
+
+console.log("ACTUAL", JSON.stringify(tpl`<div>
+    <p>m8s, use:</p>
+    <ul>${humanity.map(attribute => `<li>${attribute}</li>`)}</ul>
+  </div>`, null, 2))
+
+console.log("EXPECTED", JSON.stringify(expected, null, 2))
+
+  assert.deepEqual(tpl`<div>
+      <p>m8s, use:</p>
+      <ul>${humanity.map(attribute => `<li>${attribute}</li>`)}</ul>
+    </div>`, expected, "Example block")
 
   assert.deepEqual(tpl`<${tag} />`, {tagName: tag, type: "VirtualNode"}, "dynamic, self closing tag with space before self closing token")
   assert.deepEqual(tpl`<${tag}/>`, {tagName: tag, type: "VirtualNode"}, "dynamic, self closing tag withOUT space before self closing token")
