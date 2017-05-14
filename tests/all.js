@@ -81,17 +81,25 @@ assert.deepEqual(tpl`<${tag}>
       },
       {
         tagName: "b",
-        type: "VirtualNode",
-        children: "standard"
+        children: [
+          {
+            type: "VirtualText",
+            text: "standard"
+          }
+        ]
       },
       {
         tagName: "em",
-        type: "VirtualNode",
-        children: "formatting"
+        children: [
+          {
+            type: "VirtualText",
+            text: "formatting"
+          }
+        ]
       },
       {
         type: "VirtualText",
-        text: " elements mixed in"
+        text: "elements mixed in"
       }
     ]}
   ]}
