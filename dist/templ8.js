@@ -73,23 +73,34 @@ function parse_template(template) {
     const token = matches[0];
     const target_children = ASTs.length > 0 ? ASTs[ASTs.length - 1].children : null;
 
+    // Start with a tree.
     if (index === 0) {
       AST = AST_from_token(token, "VirtualNode");
       ASTs.push(AST);
-    } else if (!token.startsWith("<") && !token.endsWith(">")) {
-      if (target_children && token.replace(/\s+/g, "") !== "") target_children.push({
-        type: "VirtualText",
-        text: token
-      });
-    } else if (!token.startsWith("</") && !token.endsWith("/>")) {
-      const new_AST = AST_from_token(token, "VirtualNode");
-      if (target_children) target_children.push(new_AST);
-
-      ASTs.push(new_AST);
-    } else {
-      ASTs.pop();
     }
+    // Check for text.
+    else if (!token.startsWith("<") && !token.endsWith(">")) {
+        if (target_children && token.replace(/\s+/g, "") !== "") target_children.push({
+          type: "VirtualText",
+          text: token
+        });
+      }
+      // If it's a tag and it's not a closing tag create a new
+      // virtual node and push the new tree into the potential
+      // parents array ASTs.
+      else if (!token.startsWith("</") && !token.endsWith("/>")) {
+          const new_AST = AST_from_token(token, "VirtualNode");
+          if (target_children) target_children.push(new_AST);
 
+          ASTs.push(new_AST);
+        }
+        // It's probably a closing tag, clear the last one out
+        // of the array of generated ASTs.
+        else {
+            ASTs.pop();
+          }
+
+    // Bump the index.
     index++;
   }
 

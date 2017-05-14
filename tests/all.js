@@ -41,6 +41,13 @@ tape("Basic compilations", assert => {
   ]
 }, "Dynamic tag with a child and usual tabbed spacing.")
 
+console.log(JSON.stringify(tpl`<${tag}>
+<h1>whatever</h1>
+<div class="body">
+  <p>Some text with some <b>standard</b> <em>formatting</em> elements mixed in.</p>
+</div>
+</${tag}>`, null, 2))
+
 assert.deepEqual(tpl`<${tag}>
 <h1>whatever</h1>
 <div class="body">
