@@ -153,3 +153,4 @@ function templ8(template: Array<string>, ...values: Array<string>): AST {
 templ8.transformer = (AST: AST): AST => AST
 
 module.exports = templ8
+module.exports.parse_template = parse_template
