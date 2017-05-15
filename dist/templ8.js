@@ -115,7 +115,7 @@ function parse_template(template) {
  * for virtual dom,
  *
  * @param  {Array<string>} template parts.
- * @param  {Array<*>} values to interpolate into the template parts.
+ * @param  {Array<string>} values to interpolate into the template parts.
  * @return {Entity} valid virtual dom element.
  */
 function templ8(template, ...values) {

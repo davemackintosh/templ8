@@ -125,10 +125,10 @@ function parse_template(template: string): AST {
  * for virtual dom,
  *
  * @param  {Array<string>} template parts.
- * @param  {Array<*>} values to interpolate into the template parts.
+ * @param  {Array<string>} values to interpolate into the template parts.
  * @return {Entity} valid virtual dom element.
  */
-function templ8(template: Array<string>, ...values: Array<*>): AST {
+function templ8(template: Array<string>, ...values: Array<string>): AST {
   // Compile the template.
   const rendered_template = template.reduce((out, current, index) => {
     out += current
