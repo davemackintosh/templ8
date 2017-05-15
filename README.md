@@ -5,7 +5,7 @@ Use strings to generate virtual DOM objects, strings m8s.
 Use template literals with real JavaScript (no made up mumbo jumbo or helpers)
 
 ```js
-const templ8 = require("templ8")
+const templ8 = require("templ8m8s")
 const humanity = ["love", "understanding", "empathy"]
 
 const vdom = templ8`<div>
@@ -19,7 +19,7 @@ const vdom = templ8`<div>
 Or use plain strings to get the same.
 
 ```js
-const {parse_template} = require("templ8")
+const {parse_template} = require("templ8m8s")
 
 const vdom = parse_template(`<div>
     <p>m8s, use:</p>
