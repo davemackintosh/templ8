@@ -2,23 +2,67 @@
 
 ```js
 const templ8 = require("templ8")
-const technology = "ES6"
-const and = ["love", "understanding", "empathy"]
+const humanity = ["love", "understanding", "empathy"]
 
-const vdom = templ8`<p>
-  m8s, use ${technology} & ${and.map(word => word)} to improve people's lives.
-</p>`
+const vdom = templ8`<div>
+    <p>m8s, use:</p>
+    <ul>
+      ${humanity.map(value => `<li>${value}</li>`).join("")}
+    </ul>
+  </div>`
 
 /*
 vdom = {
-  tag: "p",
-  type: "VirtualNode",
-  children: [
-    {
-      type: "VirtualText",
-      text: "m8s, use ES6 to improve people's lives."
-    }
-  ]
+tagName: "div",
+type: "VirtualNode",
+children: [
+  {
+    type: "VirtualNode",
+    tagName: "p",
+    children: [
+      {
+        type: "VirtualText",
+        text: "m8s, use:"
+      }
+    ]
+  },
+  {
+    type: "VirtualNode",
+    tagName: "ul",
+    children: [
+      {
+        type: "VirtualNode",
+        tagName: "li",
+        children: [
+          {
+            type: "VirtualText",
+            text: "love"
+          }
+        ]
+      },
+      {
+        type: "VirtualNode",
+        tagName: "li",
+        children: [
+          {
+            type: "VirtualText",
+            text: "understanding"
+          }
+        ]
+      },
+      {
+        type: "VirtualNode",
+        tagName: "li",
+        children: [
+          {
+            type: "VirtualText",
+            text: "empathy"
+          }
+        ]
+      }
+    ]
+  }
+]
 }
 */
 ```
