@@ -1,7 +1,7 @@
 {
   "name": "templ8m8s",
-  "version": "1.0.0-pre",
-  "description": "",
+  "version": "1.0.1-pre",
+  "description": "Use strings to generate virtual DOM objects, strings m8s.",
   "main": "./dist/templ8.js",
   "directories": {
     "test": "tests"
@@ -13,9 +13,9 @@
     "watch": "babel --watch=./index.js --out-file ./dist/templ8.js",
     "build": "browserify --debug -s templ8 ./index.js -o ./dist/templ8.js -t [ babelify deamdify es6ify deglobalify ]"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "keywords": ["string", "html", "virtualDom", "vdom"],
+  "author": "davemackintosh",
+  "license": "MIT",
   "devDependencies": {
     "babel-cli": "^6.23.0",
     "babel-plugin-transform-flow-strip-types": "^6.21.0",
