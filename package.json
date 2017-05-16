@@ -1,6 +1,6 @@
 {
   "name": "templ8m8s",
-  "version": "1.0.3-pre",
+  "version": "1.0.4",
   "description": "Use strings to generate virtual DOM objects, strings m8s.",
   "main": "./dist/templ8.js",
   "bugs": {
