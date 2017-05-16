@@ -11,7 +11,7 @@ const humanity = ["love", "understanding", "empathy"]
 const vdom = templ8`<div>
     <p>m8s, use:</p>
     <ul>
-      ${humanity.map(value => `<li>${value}</li>`).join("")}
+      ${humanity.map(value => `<li style="color: red">${value}</li>`).join("")}
     </ul>
   </div>`
 ```
@@ -24,9 +24,9 @@ const {parse_template} = require("templ8m8s")
 const vdom = parse_template(`<div>
     <p>m8s, use:</p>
     <ul>
-      <li>love</li>
-      <li>understanding</li>
-      <li>empathy</li>
+      <li style="color: red">love</li>
+      <li style="color: red">understanding</li>
+      <li style="color: red">empathy</li>
     </ul>
   </div>`)
 ```
@@ -56,6 +56,9 @@ children: [
       {
         type: "VirtualNode",
         tagName: "li",
+        style: {
+          color: "red"
+        },
         children: [
           {
             type: "VirtualText",
@@ -66,6 +69,9 @@ children: [
       {
         type: "VirtualNode",
         tagName: "li",
+        style: {
+          color: "red"
+        },
         children: [
           {
             type: "VirtualText",
@@ -76,6 +82,9 @@ children: [
       {
         type: "VirtualNode",
         tagName: "li",
+        style: {
+          color: "red"
+        },
         children: [
           {
             type: "VirtualText",
@@ -88,4 +97,18 @@ children: [
 ]
 }
 */
+```
+
+## I want to transform the object returned.
+
+Set the transformer property to a function you'll get the full AST passed to you to transform on each parsing.
+
+```js
+const templ8 = require("templ8m8s")
+templ8.transformer = (AST: AST): Object => {
+  // ... transform the AST here...
+
+  // Return it.
+  return AST
+}
 ```

@@ -1,8 +1,12 @@
 {
   "name": "templ8m8s",
-  "version": "1.0.1-pre",
+  "version": "1.0.3-pre",
   "description": "Use strings to generate virtual DOM objects, strings m8s.",
   "main": "./dist/templ8.js",
+  "bugs": {
+    "url": "https://github.com/davemackintosh/templ8/issues"
+  },
+  "homepage": "https://github.com/davemackintosh/templ8#readme",
   "directories": {
     "test": "tests"
   },

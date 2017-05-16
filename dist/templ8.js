@@ -128,7 +128,7 @@ function parse_template(template) {
 
   if (!AST.children || AST.children.length === 0) delete AST.children;
 
-  return AST;
+  return templ8.transformer(AST);
 }
 
 /**
@@ -154,10 +154,7 @@ function templ8(template, ...values) {
   }
 
   // Create the VDom.
-  const AST = parse_template(rendered_template);
-
-  // Run it through the transformer.
-  return templ8.transformer(AST);
+  return parse_template(rendered_template);
 }
 
 // Default transformer.
