@@ -165,3 +165,5 @@ templ8.transformer = AST => AST;
 
 module.exports = templ8;
 module.exports.parse_template = parse_template;
+
+//# sourceMappingURL=templ8.js.map
