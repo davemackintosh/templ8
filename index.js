@@ -174,5 +174,6 @@ function templ8(template: Array<string>, ...values: Array<string>): AST {
 // Default transformer.
 templ8.transformer = (AST: AST): AST => AST
 
-module.exports = templ8
-module.exports.parse_template = parse_template
+export default templ8
+export { templ8 as templ8 }
+export { parse_template as parse_template }

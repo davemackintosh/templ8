@@ -1,1 +1,14 @@
-{"plugins": ["transform-flow-strip-types"]}
+{
+  "presets": [
+    "env",
+    "stage-0"
+  ],
+  "plugins": [
+    "transform-es2015-modules-umd",
+    "transform-flow-strip-types",
+    "transform-class-properties",
+    "transform-decorators",
+    "transform-react-constant-elements",
+    "transform-react-inline-elements"
+  ]
+}

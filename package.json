@@ -1,6 +1,6 @@
 {
   "name": "templ8m8s",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Use strings to generate virtual DOM objects, strings m8s.",
   "main": "./dist/templ8.js",
   "bugs": {
@@ -14,7 +14,7 @@
     "prepublish": "npm run build",
     "test": "tape tests/all.js | tap-spec",
     "watch": "babel --watch=./index.js --out-file ./dist/templ8.js",
-    "build": "babel -s templ8 ./index.js -o ./dist/templ8.js -t babelify"
+    "build": "babel --standalone templ8 ./index.js -o ./dist/templ8.js"
   },
   "keywords": [
     "string",
@@ -26,6 +26,8 @@
   "license": "MIT",
   "devDependencies": {
     "babel-cli": "^6.23.0",
+    "babel-env": "^2.4.1",
+    "babel-plugin-transform-es2015-modules-umd": "^6.24.1",
     "babel-plugin-transform-flow-strip-types": "^6.21.0",
     "babelify": "^7.3.0",
     "deamdify": "^0.3.0",
