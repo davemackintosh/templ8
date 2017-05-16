@@ -27,6 +27,19 @@ function get_attrs_from_tokens(tokens: Array<string>): Object {
   return out
 }
 
+function style_object_from_string(styles: string): object {
+  const parts = styles.split(";")
+  const out = {}
+
+  parts.forEach(style => {
+    const [key, value] = style.split(":")
+    const styleKey = key.trim().replace(/-([a-z])/ig, (matches, letter) => letter.toUpperCase())
+    out[styleKey] = value.trim()
+  })
+
+  return out
+}
+
 /**
  * Generate an object from a tokenised piece of HTML.
  *
@@ -58,8 +71,17 @@ function AST_from_token(token: string, type: string = "VirtualText"): AST {
   }
 
   // Add any attributes.
-  if (attrs.length > 0)
-    target.attrs = get_attrs_from_tokens(attrs)
+  if (attrs.length > 0) {
+    const tokenised_attrs = get_attrs_from_tokens(attrs)
+
+    if (tokenised_attrs.style) {
+      target.style = style_object_from_string(tokenised_attrs.style)
+      delete tokenised_attrs.style
+    }
+
+    if (Object.keys(tokenised_attrs).length > 0)
+      target.attrs = tokenised_attrs
+  }
 
   return target
 }

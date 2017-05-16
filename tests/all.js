@@ -172,5 +172,22 @@ assert.deepEqual(tpl`<${tag}>
   assert.deepEqual(tpl`<div class="${tag}"></div>`, {tagName: "div", type: "VirtualNode", attrs: {class: tag}}, "Standard empty element with dynamic only attribute.")
   assert.deepEqual(tpl`<div class="whatever ${tag}"></div>`, {tagName: "div", type: "VirtualNode", attrs: {class: "whatever " + tag}}, "Standard, empty element with dynamic, concatenated attribute.")
 
+  assert.deepEqual(tpl`<div style="margin-top: 1em"></div>`, {
+    tagName: "div",
+    type: "VirtualNode",
+    style: {
+      marginTop: "1em"
+    }
+  }, "Standard, empty element with static style attributes.")
+
+  const top = Math.random()
+  assert.deepEqual(tpl`<div style="margin-top: ${top}em"></div>`, {
+    tagName: "div",
+    type: "VirtualNode",
+    style: {
+      marginTop: `${top}em`
+    }
+  }, "Standard, empty element with dynamic style attributes.")
+
   assert.end()
 })
