@@ -70,6 +70,8 @@ function AST_from_token(token: string, type: string = "VirtualText"): AST {
     target.children = []
   }
 
+  target.version = "2"
+
   // Add any attributes.
   if (attrs.length > 0) {
     const tokenised_attrs = get_attrs_from_tokens(attrs)
@@ -112,7 +114,8 @@ function parse_template(template: string): AST {
       if (target_children && token.replace(/\s+/g, "") !== "")
         target_children.push({
           type: "VirtualText",
-          text: token
+          text: token,
+          version: "2"
         })
     }
     // If it's a tag and it's not a closing tag create a new
